@@ -1,13 +1,14 @@
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
+
 import HomeScreen from './screens/HomeScreen';
 import DetailsScreen from './screens/DetailsScreen';
 import LoginScreen from './screens/LoginScreen';
 import ProfileScreen from './screens/ProfileScreen';
-import React from 'react';
-import { useEffect, useState } from 'react';
-import { getName } from './utils/storage';
 
+import { getName } from './utils/storage';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,7 +29,11 @@ export default function App() {
   }, []);
 
   if (!initialRoute) {
-    return null; // or a loading screen
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
   return (
@@ -43,3 +48,10 @@ export default function App() {
   );
 }
 
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
