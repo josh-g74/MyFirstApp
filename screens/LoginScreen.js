@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import { saveName } from '../utils/storage'; // ✅ import this at the top
+import { saveName } from '../utils/storage';
 
 
 export default function LoginScreen({ navigation }) {
@@ -8,7 +8,7 @@ export default function LoginScreen({ navigation }) {
 
   const handleLogin = async () => {
   if (name.trim()) {
-    await saveName(name); // ✅ save the name
+    await saveName(name);
     navigation.navigate('Profile', { name });
   } else {
     alert('Please enter your name');
