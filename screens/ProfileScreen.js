@@ -7,13 +7,22 @@ export default function ProfileScreen({ route, navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Welcome, {name}!</Text>
+
+      {/* Button to navigate to Home */}
       <Button
-  title="Log Out"
-  onPress={async () => {
-    await deleteName();
-    navigation.navigate('Login');
-  }}
-/>
+        title="Go to Home"
+        onPress={() => navigation.navigate('Home', { name })}
+      />
+
+      <View style={{ height: 10 }} /> {/* spacing */}
+
+      <Button
+        title="Log Out"
+        onPress={async () => {
+          await deleteName();
+          navigation.navigate('Login');
+        }}
+      />
     </View>
   );
 }
@@ -23,6 +32,6 @@ const styles = StyleSheet.create({
     flex: 1, justifyContent: 'center', alignItems: 'center',
   },
   text: {
-    fontSize: 24, fontWeight: 'bold',
+    fontSize: 24, fontWeight: 'bold', marginBottom: 20,
   },
 });
