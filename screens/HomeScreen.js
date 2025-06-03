@@ -1,20 +1,26 @@
 import { View, Text, Button, StyleSheet } from 'react-native';
 
 export default function HomeScreen({ route, navigation }) {
-  const name = route.params?.name || 'Guest';
+  const { userId, username } = route.params || {};
+
+  const displayName = username || 'Guest';
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Hello, {name}! Welcome to the Home Screen</Text>
+      <Text style={styles.text}>Hello, {displayName}! Welcome to the Home Screen</Text>
 
-      <View style={{ height: 10 }} /> {/* spacing */}
+      {userId && (
+        <Text style={styles.subtext}>Your User ID is: {userId}</Text>
+      )}
+
+      <View style={{ height: 20 }} /> {/* spacing */}
 
       <Button
         title="Go to Details"
         onPress={() =>
           navigation.navigate('Details', {
-            userId: 42,
-            username: name.toLowerCase(), // using the same name
+            userId: userId || 0,
+            username: displayName.toLowerCase(),
           })
         }
       />
@@ -32,5 +38,9 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 20,
     marginBottom: 10,
+  },
+  subtext: {
+    fontSize: 16,
+    color: 'gray',
   },
 });

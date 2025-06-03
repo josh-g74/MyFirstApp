@@ -1,10 +1,12 @@
 import { View, Text, Button, StyleSheet } from 'react-native';
 
 export default function DetailsScreen({ route, navigation }) {
-  const { userId = 'N/A', username = 'Unknown' } = route.params || {};
+  const { userId = 'N/A', username = '' } = route.params || {};
 
-  const formatUsername = (name) =>
-    name.charAt(0).toUpperCase() + name.slice(1);
+  const formatUsername = (name) => {
+    if (typeof name !== 'string' || !name.trim()) return 'Unknown';
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  };
 
   return (
     <View style={styles.container}>
@@ -12,15 +14,15 @@ export default function DetailsScreen({ route, navigation }) {
 
       <View style={styles.infoContainer}>
         <Text style={styles.label}>User ID:</Text>
-        <Text>{userId}</Text>
+        <Text style={styles.value}>{userId}</Text>
       </View>
 
       <View style={styles.infoContainer}>
         <Text style={styles.label}>Username:</Text>
-        <Text>{formatUsername(username)}</Text>
+        <Text style={styles.value}>{formatUsername(username)}</Text>
       </View>
 
-      <View style={{ height: 20 }} />
+      <View style={{ height: 30 }} />
 
       <Button title="Go Back" onPress={() => navigation.goBack()} />
     </View>
@@ -35,15 +37,22 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   heading: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 25,
   },
   infoContainer: {
-    marginBottom: 10,
+    marginBottom: 15,
     alignItems: 'center',
   },
   label: {
+    fontSize: 16,
     fontWeight: 'bold',
+    color: '#555',
+  },
+  value: {
+    fontSize: 18,
+    color: '#333',
+    marginTop: 4,
   },
 });

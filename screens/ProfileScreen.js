@@ -1,28 +1,50 @@
+import { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
-import { deleteName } from '../utils/storage';
+import { getName, deleteName } from '../utils/storage';
 
-export default function ProfileScreen({ route, navigation }) {
-  const { name } = route.params;
+export default function ProfileScreen({ navigation }) {
+  const [name, setName] = useState(null);
+
+  useEffect(() => {
+    async function loadName() {
+      const storedName = await getName();
+      if (storedName) {
+        setName(storedName);
+      } else {
+        navigation.replace('Login');
+      }
+    }
+
+    loadName();
+  }, []);
+
+  if (!name) {
+    return null; // You could show a loading spinner here
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Welcome, {name}!</Text>
 
-      {/* Button to navigate to Home */}
       <Button
         title="Go to Home"
-        onPress={() => navigation.navigate('Home', { name })}
+        onPress={() =>
+          navigation.navigate('Home', {
+            userId: 42,
+            username: name,
+          })
+        }
       />
 
-      <View style={{ height: 10 }} /> {/* spacing */}
-
-      <Button
-        title="Log Out"
-        onPress={async () => {
-          await deleteName();
-          navigation.navigate('Login');
-        }}
-      />
+      <View style={{ marginTop: 20 }}>
+        <Button
+          title="Log Out"
+          onPress={async () => {
+            await deleteName();
+            navigation.replace('Login');
+          }}
+        />
+      </View>
     </View>
   );
 }
