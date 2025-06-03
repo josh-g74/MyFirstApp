@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, ActivityIndicator } from 'react-native';
 import { getName, deleteName } from '../utils/storage';
 
 export default function ProfileScreen({ navigation }) {
@@ -16,10 +16,15 @@ export default function ProfileScreen({ navigation }) {
     }
 
     loadName();
-  }, []);
+  }, [navigation]); // <-- added navigation here
 
   if (!name) {
-    return null; // You could show a loading spinner here
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" />
+        <Text>Loading profile...</Text>
+      </View>
+    );
   }
 
   return (
@@ -41,7 +46,10 @@ export default function ProfileScreen({ navigation }) {
           title="Log Out"
           onPress={async () => {
             await deleteName();
-            navigation.replace('Login');
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Login' }],
+            });
           }}
         />
       </View>

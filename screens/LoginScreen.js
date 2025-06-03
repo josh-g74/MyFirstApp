@@ -2,19 +2,20 @@ import { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { saveName } from '../utils/storage';
 
-
 export default function LoginScreen({ navigation }) {
   const [name, setName] = useState('');
 
   const handleLogin = async () => {
-  if (name.trim()) {
-    await saveName(name);
-    navigation.navigate('Profile', { name });
-  } else {
-    alert('Please enter your name');
-  }
-};
-
+    if (name.trim()) {
+      await saveName(name);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Profile', params: { name } }],
+      });
+    } else {
+      alert('Please enter your name');
+    }
+  };
 
   return (
     <View style={styles.container}>
