@@ -1,17 +1,17 @@
-import { useState } from 'react';
+// screens/LoginScreen.js
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import { saveName } from '../utils/storage';
+import { AuthContext } from '../context/AuthContext';
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen() {
   const [name, setName] = useState('');
+  const { signIn } = useContext(AuthContext);
 
   const handleLogin = async () => {
     if (name.trim()) {
-      await saveName(name);
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Profile' }],
-      });
+      await signIn(name.trim());
+      // No need for navigation.reset or navigation.navigate here:
+      // once signIn(name) sets userName in context, Routes() will switch to AppNavigator automatically.
     } else {
       alert('Please enter your name');
     }
@@ -33,13 +33,21 @@ export default function LoginScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
   heading: {
-    fontSize: 24, marginBottom: 20,
+    fontSize: 24,
+    marginBottom: 20,
   },
   input: {
-    width: '100%', borderWidth: 1, borderColor: '#ccc',
-    padding: 10, marginBottom: 20, borderRadius: 5,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    marginBottom: 20,
+    borderRadius: 5,
   },
 });

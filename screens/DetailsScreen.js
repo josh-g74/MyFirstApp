@@ -1,3 +1,5 @@
+// screens/DetailsScreen.js
+import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 
 export default function DetailsScreen({ route, navigation }) {
@@ -39,7 +41,7 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 25,
+    marginBottom: 20,
   },
   infoContainer: {
     marginBottom: 15,

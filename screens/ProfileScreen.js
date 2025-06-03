@@ -1,42 +1,24 @@
-import { useState, useCallback } from 'react';
-import { View, Text, Button, StyleSheet, ActivityIndicator } from 'react-native';
-import { getName, deleteName } from '../utils/storage';
-import { useFocusEffect } from '@react-navigation/native';
+// screens/ProfileScreen.js
+import React, { useEffect, useState, useContext } from 'react';
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
+import { AuthContext } from '../context/AuthContext';
 
 export default function ProfileScreen({ navigation }) {
-  const [name, setName] = useState(null);
+  const { userName, signOut } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
 
-  useFocusEffect(
-    useCallback(() => {
-      let isActive = true;
-
-      const loadName = async () => {
-        setLoading(true);
-        const storedName = await getName();
-
-        if (!isActive) return;
-
-        if (storedName) {
-          setName(storedName);
-        } else {
-          setName(null);
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Login' }],
-          });
-        }
-
-        setLoading(false);
-      };
-
-      loadName();
-
-      return () => {
-        isActive = false;
-      };
-    }, [navigation])
-  );
+  // When userName changes (or on first mount), hide spinner:
+  useEffect(() => {
+    if (userName) {
+      setLoading(false);
+    }
+  }, [userName]);
 
   if (loading) {
     return (
@@ -49,14 +31,14 @@ export default function ProfileScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Welcome, {name}!</Text>
+      <Text style={styles.text}>Welcome, {userName}!</Text>
 
       <Button
         title="Go to Home"
         onPress={() =>
           navigation.navigate('Home', {
             userId: 42,
-            username: name,
+            username: userName,
           })
         }
       />
@@ -66,12 +48,9 @@ export default function ProfileScreen({ navigation }) {
           title="Log Out"
           onPress={async () => {
             setLoading(true);
-            setName(null);
-            await deleteName();
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Login' }],
-            });
+            await signOut();
+            // Once signOut() runs, AuthContext.userName becomes null,
+            // and App.js → Routes() will switch back to the AuthNavigator (Login).
           }}
         />
       </View>
@@ -81,9 +60,13 @@ export default function ProfileScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, justifyContent: 'center', alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   text: {
-    fontSize: 24, fontWeight: 'bold', marginBottom: 20,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
 });
