@@ -10,7 +10,7 @@ export default function LoginScreen({ navigation }) {
       await saveName(name);
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Profile', params: { name } }],
+        routes: [{ name: 'Profile' }],
       });
     } else {
       alert('Please enter your name');

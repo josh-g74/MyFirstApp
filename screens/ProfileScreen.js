@@ -1,24 +1,44 @@
-import { useEffect, useState } from 'react';
+import { useState, useCallback } from 'react';
 import { View, Text, Button, StyleSheet, ActivityIndicator } from 'react-native';
 import { getName, deleteName } from '../utils/storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function ProfileScreen({ navigation }) {
   const [name, setName] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadName() {
-      const storedName = await getName();
-      if (storedName) {
-        setName(storedName);
-      } else {
-        navigation.replace('Login');
-      }
-    }
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
 
-    loadName();
-  }, [navigation]); // <-- added navigation here
+      const loadName = async () => {
+        setLoading(true);
+        const storedName = await getName();
 
-  if (!name) {
+        if (!isActive) return;
+
+        if (storedName) {
+          setName(storedName);
+        } else {
+          setName(null);
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Login' }],
+          });
+        }
+
+        setLoading(false);
+      };
+
+      loadName();
+
+      return () => {
+        isActive = false;
+      };
+    }, [navigation])
+  );
+
+  if (loading) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" />
@@ -45,6 +65,8 @@ export default function ProfileScreen({ navigation }) {
         <Button
           title="Log Out"
           onPress={async () => {
+            setLoading(true);
+            setName(null);
             await deleteName();
             navigation.reset({
               index: 0,
