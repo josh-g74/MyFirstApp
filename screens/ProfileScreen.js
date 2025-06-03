@@ -1,37 +1,44 @@
-import { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import { getName, deleteName } from '../utils/storage';
+// screens/ProfileScreen.js
+import React, { useEffect, useState, useContext } from 'react';
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
+import { AuthContext } from '../context/AuthContext';
 
 export default function ProfileScreen({ navigation }) {
-  const [name, setName] = useState(null);
+  const { userName, signOut } = useContext(AuthContext);
+  const [loading, setLoading] = useState(true);
 
+  // When userName changes (or on first mount), hide spinner:
   useEffect(() => {
-    async function loadName() {
-      const storedName = await getName();
-      if (storedName) {
-        setName(storedName);
-      } else {
-        navigation.replace('Login');
-      }
+    if (userName) {
+      setLoading(false);
     }
+  }, [userName]);
 
-    loadName();
-  }, []);
-
-  if (!name) {
-    return null; // You could show a loading spinner here
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" />
+        <Text>Loading profile...</Text>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Welcome, {name}!</Text>
+      <Text style={styles.text}>Welcome, {userName}!</Text>
 
       <Button
         title="Go to Home"
         onPress={() =>
           navigation.navigate('Home', {
             userId: 42,
-            username: name,
+            username: userName,
           })
         }
       />
@@ -40,8 +47,10 @@ export default function ProfileScreen({ navigation }) {
         <Button
           title="Log Out"
           onPress={async () => {
-            await deleteName();
-            navigation.replace('Login');
+            setLoading(true);
+            await signOut();
+            // Once signOut() runs, AuthContext.userName becomes null,
+            // and App.js → Routes() will switch back to the AuthNavigator (Login).
           }}
         />
       </View>
@@ -51,9 +60,13 @@ export default function ProfileScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, justifyContent: 'center', alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   text: {
-    fontSize: 24, fontWeight: 'bold', marginBottom: 20,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
 });
